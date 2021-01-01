@@ -1,4 +1,4 @@
-function [recon_bg] = styleTransfer(I, E, mask, bg)
+function [recon_bg] = styleTransfer(I, E, mask, bg, n)
 %% part c
 I_new = changeBackground(I, mask, bg);
 figure();
@@ -16,7 +16,7 @@ title('Image with new bg');
 
 %% part d
 
-n = 6;
+
 I_r = I_new(:,:,1); % Red channel
 I_g = I_new(:,:,2); % Green channel
 I_b = I_new(:,:,3); % Blue channel
