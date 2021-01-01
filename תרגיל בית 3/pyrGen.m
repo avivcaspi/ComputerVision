@@ -1,26 +1,17 @@
 function [Gaussian, Laplacian] = pyrGen(image, n)
-    [Gaussian, Laplacian] = pyrGenRecurse(image, n, 0);
+    [Gaussian, Laplacian] = pyrGenRecurse(image, image, n, 2);
 end
 
-function [Gaussian, Laplacian] = pyrGenRecurse(image, n, i)
+function [Gaussian, Laplacian] = pyrGenRecurse(image, last_level, n, i)
     if n==1
-        Gaussian = {image};
-        Laplacian = {image};
+        Gaussian = {last_level};
+        Laplacian = {last_level};
     else
-        Gaussian = {image};
-        sigma = 2 ^ 2;
-        if i == 0
-            i
-            imageGausseFiltered = imgaussfilt(image, sigma);
-        else
-            imageGausseFiltered = image;
-            for k=1:i
-                k
-                imageGausseFiltered = imgaussfilt(imageGausseFiltered, sigma);
-            end
-        end
+        Gaussian = {last_level};
+        sigma = 2 ^ i;
+        imageGausseFiltered = imgaussfilt(image, sigma);
         Laplacian = {Gaussian{1} - imageGausseFiltered};
-        [G, L] = pyrGenRecurse(imageGausseFiltered, n-1, i+1);
+        [G, L] = pyrGenRecurse(image, imageGausseFiltered, n-1, i+1);
         Gaussian = [Gaussian; G];
         Laplacian = [Laplacian; L];
     end
