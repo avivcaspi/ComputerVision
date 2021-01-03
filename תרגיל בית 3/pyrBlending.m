@@ -1,10 +1,9 @@
-function [combined] = pyrBlending(I, E, mask, bg, n)
-I_new_bg = changeBackground(I, mask, bg);
-I_r = I_new_bg(:,:,1); % Red channel
-I_g = I_new_bg(:,:,2); % Green channel
-I_b = I_new_bg(:,:,3); % Blue channel
+function [combined] = pyrBlending(I, styledI, n)
 
-styledI = styleTransfer(I, E, mask, bg, n);
+I_r = I(:,:,1); % Red channel
+I_g = I(:,:,2); % Green channel
+I_b = I(:,:,3); % Blue channel
+
 style_r = styledI(:,:,1); % Red channel
 style_g = styledI(:,:,2); % Green channel
 style_b = styledI(:,:,3); % Blue channel
