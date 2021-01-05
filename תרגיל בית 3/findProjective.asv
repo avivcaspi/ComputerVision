@@ -1,5 +1,5 @@
 function H = findProjective(pts)
-% finds H for which pts(1:2, :) = H * pts(3:4,:)
+% finds H for which 
 % pts - matrix (4xn), n is number of pts
 % and 4 is the indices of the points
 % pts(1:2,i) - (x,y) of the point i from image 1
