@@ -1,5 +1,6 @@
 function [recon_bg] = styleTransfer(I, E, mask, bg, n)
 %% part c
+% change the background using the mask
 I_new = changeBackground(I, mask, bg);
 figure();
 subplot(1,3,1);
@@ -16,25 +17,29 @@ title('Image with new bg');
 
 %% part d
 
-
+% seperating the color channels
 I_r = I_new(:,:,1); % Red channel
 I_g = I_new(:,:,2); % Green channel
 I_b = I_new(:,:,3); % Blue channel
 E_r = E(:,:,1); % Red channel
 E_g = E(:,:,2); % Green channel
 E_b = E(:,:,3); % Blue channel
+
+% building laplacian pyramid for each channel
 [~, I_r_L] = pyrGen(I_r, n);
 [~, I_g_L] = pyrGen(I_g, n);
 [~, I_b_L] = pyrGen(I_b, n);
 [~, E_r_L] = pyrGen(E_r, n);
 [~, E_g_L] = pyrGen(E_g, n);
 [~, E_b_L] = pyrGen(E_b, n);
+
 S_I_r = {};
 S_I_g = {};
 S_I_b = {};
 S_E_r = {};
 S_E_g = {};
 S_E_b = {};
+% Calculate the energy of each channel and level in the pyramid
 for i=1:n
     S_I_r = [S_I_r; imgaussfilt(I_r_L{i} .^ 2, 2^(i+1))];
     S_I_g = [S_I_g; imgaussfilt(I_g_L{i} .^ 2, 2^(i+1))];
@@ -47,12 +52,13 @@ gain_r = {};
 gain_g = {};
 gain_b = {};
 e = 10^-4;
+% Calculate the gain of each color channel and level in the pyramids
 for i=1:n
     gain_r = [gain_r; sqrt(S_E_r{i} ./ (S_I_r{i} + e))];
     gain_g = [gain_g; sqrt(S_E_g{i} ./ (S_I_g{i} + e))];
     gain_b = [gain_b; sqrt(S_E_b{i} ./ (S_I_b{i} + e))];
 end
-
+% clipping the gain to be in [0.9,2.8]
 for i=1:n
     gain_r{i}(gain_r{i} < 0.9) = 0.9;
     gain_r{i}(gain_r{i} > 2.8) = 2.8;
@@ -68,6 +74,7 @@ end
 O_r_L = {};
 O_g_L = {};
 O_b_L = {};
+% Construct the output image pyramid
 for i=1:n - 1
     O_r_L = [O_r_L; gain_r{i} .* I_r_L{i}];
     O_g_L = [O_g_L; gain_g{i} .* I_g_L{i}];
@@ -80,11 +87,13 @@ O_b_L = [O_b_L; E_b_L{n}];
 
 %% part f
 
+% Reconstruct each channel of the output image and concatenate them
 recon_r = imRecon(O_r_L);
 recon_g = imRecon(O_g_L);
 recon_b = imRecon(O_b_L);
 
 recon_image = cat(3, recon_r, recon_g, recon_b);
+% changing the background again to achieve better results
 recon_bg = changeBackground(recon_image, mask, bg);
 
 
